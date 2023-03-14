@@ -12,6 +12,7 @@ class CurrencyConverterController extends Controller
 {
     public function index()
     {
+        return view("convert.index", compact('currencyRates', 'title'));
     }
 
     public function convert(Request $request, $currencyIdentifier)
@@ -28,18 +29,21 @@ class CurrencyConverterController extends Controller
         //formulate the URL
         $url = "https://api.exchangerate.host/convert?from={$from}&to={$to}&amount={$amount}";
 
+        $ratesAPIUrl = "https://api.exchangerate.host/latest?base=usd";
+
         //make api request
+        $ratesAPIRequest = Http::get($ratesAPIUrl);
 
-        $apiRequest = Http::get($url);
+        // $apiRequest = Http::get($url);
 
-        // return $apiRequest;
+         $currencyRates =  json_encode($ratesAPIRequest['rates']);
 
-        $decodedResponse = json_decode($apiRequest);
+        // $decodedResponse = json_decode($apiRequest);
 
-        $reverseRate =  1 / $decodedResponse->info->rate;
+        // $reverseRate =  1 / $decodedResponse->info->rate;
 
-        $conversionData = ["amount" => $amount, "result" => $decodedResponse->result, "rate" => $decodedResponse->info->rate, "reverseRate" => $reverseRate];
+        // $conversionData = ["amount" => $amount, "result" => $decodedResponse->result, "rate" => $decodedResponse->info->rate, "reverseRate" => $reverseRate];
 
-        return view("convert.index", compact('conversionData', 'title'));
+        return view("convert.index", compact('currencyRates', 'title'));
     }
 }
